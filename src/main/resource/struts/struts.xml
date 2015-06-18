@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE struts PUBLIC   
+        "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"   
+        "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+	<include file="struts-default.xml"></include>
+	<!-- 开启使用开发模式，详细错误提示 -->
+	<constant name="struts.devMode" value="true" />
+	<!-- 将对象交给spring管理 -->
+	<!-- <constant name="struts.objectFactory" value="com.opensymphony.xwork2.ObjectFactory" 
+		/> -->
+	<constant name="struts.objectFactory"
+		value="org.apache.struts2.spring.StrutsSpringObjectFactory" />
+	<!-- 指定资源编码类型 -->
+	<constant name="struts.i18n.encoding" value="UTF-8" />
+	<!-- 指定每次请求到达，重新加载资源文件 -->
+	<constant name="struts.i18n.reload" value="false" />
+	<!-- 指定每次配置文件更改后，自动重新加载 -->
+	<constant name="struts.configuration.xml.reload" value="true" />
+	<!-- 国际化资源文件 -->
+	<constant name="struts.custom.i18n.resources" value="resources/content/Language" />
+	<!-- 使用简单的ui主题，不会自动换行（默认为表格模式） -->
+	<!-- <constant name="struts.ui.theme" value="simple"/> -->
+	<!-- 基类package，定义了所有action共用的拦截器栈 -->
+	<package name="teststyle-default" extends="struts-default"
+		abstract="true">
+		<!-- 拦截器配置 -->
+		<interceptors>
+			<!-- 自定义的异常和执行时间拦截器，会把异常信息和执行时间过长的action的信息记录到日志里 -->
+			<interceptor name="exceptionAndExecuteTimeInterceptor"
+				class="exceptionAndExecuteTimeInterceptor">
+			</interceptor>
+			<!--定义监控interceptor  -->
+			<interceptor name="monitoring" class="net.bull.javamelody.StrutsInterceptor" />
+			
+			<!-- 定义默认拦截器栈 -->
+			<interceptor-stack name="teststyle-stack">
+				<!-- 引用监控的interceptor -->
+				<interceptor-ref name="monitoring" />
+				<!--— 必须引用struts默认的拦截器 -->
+				<interceptor-ref name="defaultStack" />
+				<!-- 自定义的拦截器 -->
+				<interceptor-ref name="exceptionAndExecuteTimeInterceptor" />
+			</interceptor-stack>
+		</interceptors>
+		<default-interceptor-ref name="teststyle-stack" />
+		<!-- 全局 results配置 -->
+		<global-results>
+			<result name="success">/jsp/global/json.jsp</result>
+			<result name="exception">/jsp/global/404.jsp</result>
+			<result name="input">/jsp/global/json.jsp</result>
+			<result name="login">/jsp/index.jsp</result>
+		</global-results>
+	</package>
+	<!-- 用户共有的操作 -->
+	<package name="user" extends="teststyle-default" namespace="/user">
+		<action name="*" class="userAction" method="{1}" />
+		<action name="login" class="userAction" method="login">
+			<result name="success_TEACHER">/jsp/teststyle_teacher.jsp</result>
+			<result name="success_STUDENT">/jsp/teststyle_student.jsp</result>
+			<result name="success_MANAGER">/jsp/teststyle_manager.jsp</result>
+			<result name="login">/jsp/index.jsp</result>
+		</action>
+		<action name="register" class="userAction" method="register">
+			<result name="success" type="redirectAction">login</result>
+			<result name="register">/jsp/user/register.jsp</result>
+		</action>
+		<action name="logout" class="userAction" method="logout">
+			<result name="success" type="redirectAction">login</result>
+		</action>
+		<action name="getCurrentPageUserList" class="userAction"
+			method="getCurrentPageUserList">
+			<result name="success">/jsp/manager/userlistindex.jsp</result>
+		</action>
+		<action name="getCurrentPageUserListBySubject" class="userAction"
+			method="getCurrentPageUserListBySubject">
+			<result name="success">/jsp/manager/userlistindex.jsp
+			</result>
+		</action>
+		<action name="adduser" class="userAction" method="adduser">
+			<result name="success" type="redirectAction">getCurrentPageUserList</result>
+		</action>
+		<action name="getCurrentPageUserListByUsertype" class="userAction"
+			method="getCurrentPageUserListByUsertype">
+			<result name="success_STUDENT">/jsp/manager/studentlistindex.jsp</result>
+			<result name="success_TEACHER">/jsp/manager/teacherlistindex.jsp</result>
+		</action>
+		<action name="getUserDetailByUsernameAndUsertype" class="userAction"
+			method="getUserDetailByUsernameAndUsertype">
+			<result name="success_STUDENT">/jsp/manager/showstudentdetail.jsp</result>
+			<result name="success_TEACHER">/jsp/manager/showteacherdetail.jsp</result>
+		</action>
+		<action name="gotoupdatepage" class="userAction" method="gotoupdatepage">
+			<result name="success_STUDENT">/jsp/manager/updatestudent.jsp</result>
+			<result name="success_TEACHER">/jsp/manager/updateteacher.jsp</result>
+		</action>
+		<action name="update" class="userAction" method="update">
+			<result name="success" type="redirectAction">getCurrentPageUserList</result>
+		</action>
+		<action name="delete" class="userAction" method="delete">
+			<result name="success" type="redirectAction">getCurrentPageUserList</result>
+		</action>
+	</package>
+
+	<!-- Question的操作 -->
+	<package name="question" extends="teststyle-default" namespace="/question">
+		<action name="*" class="questionAction" method="{1}" />
+		<action name="getCurrentPageQuestionList" class="questionAction"
+			method="getCurrentPageQuestionList">
+			<result name="success">/jsp/question/questionindex.jsp</result>
+		</action>
+
+		<action name="getCurrentPageQuestionListOfSearch" class="questionAction"
+			method="getCurrentPageQuestionList">
+			<result name="success">/jsp/question/questionsearchindex.jsp</result>
+		</action>
+		<action name="getCurrentPageQuestionListByUsername" class="questionAction"
+			method="getCurrentPageQuestionListByUsername">
+			<result name="success">/jsp/question/questionsearchindex.jsp</result>
+		</action>
+		<action name="getCurrentPageQuestionListByTeacher" class="questionAction"
+			method="getCurrentPageQuestionListByTeacher">
+			<result name="success">/jsp/question/questionsearchindex.jsp</result>
+		</action>
+		<action name="getCurrentPageQuestionListBySubject" class="questionAction"
+			method="getCurrentPageQuestionListBySubject">
+			<result name="success">/jsp/question/questionsearchindex.jsp</result>
+		</action>
+		<action name="getCurrentPageQuestionListByType" class="questionAction"
+			method="getCurrentPageQuestionListByType">
+			<result name="success">/jsp/question/questionsearchindex.jsp</result>
+		</action>
+		<action name="addQuestion" class="questionAction" method="addQuestion">
+			<result name="success" type="redirectAction">getCurrentPageQuestionListOfSearch
+			</result>
+		</action>
+		<action name="delete" class="questionAction" method="delete">
+			<result name="success" type="redirectAction">getCurrentPageQuestionListOfSearch
+			</result>
+		</action>
+		<action name="update" class="questionAction" method="update">
+			<result name="success" type="redirectAction">getCurrentPageQuestionListOfSearch
+			</result>
+		</action>
+		<action name="gotoupdatepage" class="questionAction" method="gotoupdatepage">
+			<result name="success_3">/jsp/question/update/jianda.jsp</result>
+			<result name="success_5">/jsp/question/update/panduan.jsp</result>
+			<result name="success_1">/jsp/question/update/tiankong.jsp</result>
+			<result name="success_4">/jsp/question/update/wenda.jsp</result>
+			<result name="success_2">/jsp/question/update/xuanze.jsp</result>
+			<result name="success_6">/jsp/question/update/zonghe.jsp</result>
+		</action>
+		<action name="getSubjectsListByMajor" class="questionAction" method="getSubjectsListByMajor">
+			<result name="success">/jsp/question/major/subjectlist.jsp
+			</result>
+		</action>
+		<action name="getSubjectsIndexListByMajor" class="questionAction" method="getSubjectsListByMajor">
+			<result name="success">/jsp/question/major/subjectlistindex.jsp
+			</result>
+		</action>
+		
+	</package>
+
+	<!-- SystemInfo的操作 -->
+	<package name="systeminfo" extends="teststyle-default"
+		namespace="/systeminfo">
+		<action name="*" class="systemInfoAction" method="{1}" />
+		<action name="getCurrentPageSystemInfoList" class="systemInfoAction"
+			method="getCurrentPageSystemInfoList">
+			<result name="success">/jsp/user/blackboarddiv.jsp</result>
+		</action>
+		<action name="getCurrentPageSystemInfoListByManager" class="systemInfoAction"
+			method="getCurrentPageSystemInfoList">
+			<result name="success">/jsp/manager/systeminfolist.jsp</result>
+		</action>
+		<action name="getTopNSystemInfoList" class="systemInfoAction"
+			method="getTopNSystemInfoList">
+			<result name="success">/jsp/manager/systeminfodivbymanager.jsp</result>
+		</action>
+		<action name="gotoUpdatePage" class="systemInfoAction"
+			method="gotoUpdatePage">
+			<result name="success">/jsp/manager/updatesysteminfo.jsp</result>
+		</action>
+		<action name="addSystemInfo" class="systemInfoAction"
+			method="addSystemInfo">
+			<result name="success" type="redirectAction">getCurrentPageSystemInfoListByManager</result>
+		</action>
+		<action name="update" class="systemInfoAction"
+			method="update">
+			<result name="success" type="redirectAction">getCurrentPageSystemInfoListByManager</result>
+		</action>
+	</package>
+
+	<!-- UserInfo的操作 -->
+	<package name="userinfo" extends="teststyle-default" namespace="/userinfo">
+		<action name="*" class="userInfoAction" method="{1}" />
+		<action name="getCurrentPageUserInfoList" class="userInfoAction"
+			method="getCurrentPageUserInfoList">
+			<result name="success">/jsp/user/userinfosdiv.jsp</result>
+		</action>
+	</package>
+
+	<!-- 拦截器测试package -->
+	<package name="interceptor" namespace="/interceptor" extends="teststyle-default">
+		<!-- 拦截器配置 -->
+		<interceptors>
+			<interceptor name="auth"
+				class="com.mishow.filter.AuthorizationInterceptor" />
+		</interceptors>
+		<!--测试inteceptor -->
+		<action name="Timer" class="com.mishow.action.TimerInterceptorAction">
+			<interceptor-ref name="timer" /><!--这个引用会覆盖上面的全局interceptor -->
+			<result>/jsp/timer.jsp</result>
+		</action>
+		<action name="Login" class="com.mishow.action.LoginAction">
+			<result type="chain"> AuthorizatedAccess</result>
+		</action>
+		<action name="AuthorizatedAccess" class="com.mishow.action.AuthorizatedAccess">
+			<interceptor-ref name="auth" /><!--Note:先执行全局的interceptor -->
+			<result name="login">/jsp/user/login.jsp
+			</result>
+			<result name="success">/jsp/user/showuser.jsp</result>
+		</action>
+	</package>
+</struts>

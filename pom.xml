@@ -14,7 +14,12 @@
 			<version>3.8.1</version>
 			<scope>test</scope>
 		</dependency>
-
+		<!-- servlet-api  -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.1.0</version>
+		</dependency>
 		<!-- spring 3.1.2配置 -->
 		<dependency>
 			<groupId>org.springframework</groupId>
